@@ -1,5 +1,6 @@
 package com.gestiontareas.application.service;
 
+import com.gestiontareas.domain.exception.RecursoNoEncontradoException;
 import com.gestiontareas.domain.model.user.User;
 import com.gestiontareas.domain.model.user.UserId;
 import com.gestiontareas.domain.port.in.ObtenerUsuarioUseCase;
@@ -20,6 +21,6 @@ public class ObtenerUsuarioService implements ObtenerUsuarioUseCase {
     @Override
     public User ejecutar(UserId id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id.value()));
+            .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado con id: " + id.value()));
     }
 }

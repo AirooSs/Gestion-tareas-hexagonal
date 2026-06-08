@@ -1,6 +1,5 @@
 package com.gestiontareas.infrastructure.web;
 
-import com.gestiontareas.domain.model.project.Project;
 import com.gestiontareas.domain.model.user.UserId;
 import com.gestiontareas.domain.port.in.CrearProyectoUseCase;
 import com.gestiontareas.domain.port.in.ListarProyectosPorUsuarioUseCase;
@@ -10,9 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Adaptador de entrada — expone los casos de uso de Project como endpoints REST.
+ * El controller solo llama a los puertos de entrada (interfaces).
+ * Nunca llama directamente a los servicios.
  */
 
 @RestController
@@ -30,19 +32,24 @@ public class ProjectController {
         this.listarProyectosPorUsuarioUseCase = listarProyectosPorUsuarioUseCase;
     }
 
+    /** Crea un nuevo proyecto asociado a un usuario */
     @PostMapping
-    public ResponseEntity<Project> crearProyecto(@RequestBody CrearProyectoRequest request) {
-        Project proyecto = crearProyectoUseCase.ejecutar(
+    public ResponseEntity<ProyectoResponse> crearProyecto(@RequestBody CrearProyectoRequest request) {
+        ProyectoResponse response = ProyectoResponse.from(crearProyectoUseCase.ejecutar(
             request.name(),
             request.description(),
             UserId.of(request.ownerId())
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyecto);
+        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /** Lista todos los proyectos de un usuario */
     @GetMapping("/usuario/{ownerId}")
-    public ResponseEntity<List<Project>> listarPorUsuario(@PathVariable UUID ownerId) {
-        List<Project> proyectos = listarProyectosPorUsuarioUseCase.ejecutar(UserId.of(ownerId));
-        return ResponseEntity.ok(proyectos);
+    public ResponseEntity<List<ProyectoResponse>> listarPorUsuario(@PathVariable UUID ownerId) {
+        List<ProyectoResponse> response = listarProyectosPorUsuarioUseCase.ejecutar(UserId.of(ownerId))
+            .stream()
+            .map(ProyectoResponse::from)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,6 +1,5 @@
 package com.gestiontareas.infrastructure.web;
 
-import com.gestiontareas.domain.model.task.Task;
 import com.gestiontareas.domain.model.task.TaskId;
 import com.gestiontareas.domain.model.task.TaskStatus;
 import com.gestiontareas.domain.model.project.ProjectId;
@@ -14,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Adaptador de entrada — expone los casos de uso como endpoints REST.
- * 
  * El controller solo llama a los puertos de entrada (interfaces).
  * Nunca llama directamente a los servicios.
  */
@@ -43,37 +42,44 @@ public class TaskController {
         this.listarTareasPorProyectoUseCase = listarTareasPorProyectoUseCase;
     }
 
+    /** Crea una nueva tarea asociada a un proyecto */
     @PostMapping
-    public ResponseEntity<Task> crearTarea(@RequestBody CrearTareaRequest request) {
-        Task tarea = crearTareaUseCase.ejecutar(
+    public ResponseEntity<TareaResponse> crearTarea(@RequestBody CrearTareaRequest request) {
+        TareaResponse response = TareaResponse.from(crearTareaUseCase.ejecutar(
             request.titulo(),
             request.descripcion(),
             ProjectId.of(request.projectId())
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(tarea);
+        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /** Obtiene una tarea por su ID */
     @GetMapping("/{id}")
-    public ResponseEntity<Task> obtenerTarea(@PathVariable UUID id) {
-        Task tarea = obtenerTareaUseCase.ejecutar(TaskId.of(id));
-        return ResponseEntity.ok(tarea);
+    public ResponseEntity<TareaResponse> obtenerTarea(@PathVariable UUID id) {
+        TareaResponse response = TareaResponse.from(obtenerTareaUseCase.ejecutar(TaskId.of(id)));
+        return ResponseEntity.ok(response);
     }
 
+    /** Actualiza el estado de una tarea */
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Task> actualizarEstado(
+    public ResponseEntity<TareaResponse> actualizarEstado(
         @PathVariable UUID id,
         @RequestBody ActualizarEstadoRequest request
     ) {
-        Task tarea = actualizarEstadoTareaUseCase.ejecutar(
+        TareaResponse response = TareaResponse.from(actualizarEstadoTareaUseCase.ejecutar(
             TaskId.of(id),
             TaskStatus.valueOf(request.estado())
-        );
-        return ResponseEntity.ok(tarea);
+        ));
+        return ResponseEntity.ok(response);
     }
 
+    /** Lista todas las tareas de un proyecto */
     @GetMapping("/proyecto/{projectId}")
-    public ResponseEntity<List<Task>> listarPorProyecto(@PathVariable UUID projectId) {
-        List<Task> tareas = listarTareasPorProyectoUseCase.ejecutar(ProjectId.of(projectId));
-        return ResponseEntity.ok(tareas);
+    public ResponseEntity<List<TareaResponse>> listarPorProyecto(@PathVariable UUID projectId) {
+        List<TareaResponse> response = listarTareasPorProyectoUseCase.ejecutar(ProjectId.of(projectId))
+            .stream()
+            .map(TareaResponse::from)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,5 +1,6 @@
 package com.gestiontareas.application.service;
 
+import com.gestiontareas.domain.exception.RecursoNoEncontradoException;
 import com.gestiontareas.domain.model.task.Task;
 import com.gestiontareas.domain.model.task.TaskId;
 import com.gestiontareas.domain.port.in.ObtenerTareaUseCase;
@@ -18,7 +19,7 @@ public class ObtenerTareaService implements ObtenerTareaUseCase {
 		// TODO Auto-generated method stub
 		return taskRepository.findById(id)
 				.orElseThrow(() ->
-				new RuntimeException("Tarea no encontrada con id: " + id.value()));
+				new RecursoNoEncontradoException("Tarea no encontrada con id: " + id.value()));
 	}
 
 }
