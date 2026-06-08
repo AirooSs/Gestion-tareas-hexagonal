@@ -4,6 +4,9 @@ import com.gestiontareas.domain.model.user.Email;
 import com.gestiontareas.domain.model.user.UserId;
 import com.gestiontareas.domain.port.in.CrearUsuarioUseCase;
 import com.gestiontareas.domain.port.in.ObtenerUsuarioUseCase;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +36,7 @@ public class UserController {
 
     /** Crea un nuevo usuario */
     @PostMapping
-    public ResponseEntity<UsuarioResponse> crearUsuario(@RequestBody CrearUsuarioRequest request) {
+    public ResponseEntity<UsuarioResponse> crearUsuario(@Valid  @RequestBody CrearUsuarioRequest request) {
         UsuarioResponse response = UsuarioResponse.from(crearUsuarioUseCase.ejecutar(
             request.name(),
             new Email(request.email())

@@ -3,6 +3,9 @@ package com.gestiontareas.infrastructure.web;
 import com.gestiontareas.domain.model.user.UserId;
 import com.gestiontareas.domain.port.in.CrearProyectoUseCase;
 import com.gestiontareas.domain.port.in.ListarProyectosPorUsuarioUseCase;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +37,7 @@ public class ProjectController {
 
     /** Crea un nuevo proyecto asociado a un usuario */
     @PostMapping
-    public ResponseEntity<ProyectoResponse> crearProyecto(@RequestBody CrearProyectoRequest request) {
+    public ResponseEntity<ProyectoResponse> crearProyecto(@Valid @RequestBody CrearProyectoRequest request) {
         ProyectoResponse response = ProyectoResponse.from(crearProyectoUseCase.ejecutar(
             request.name(),
             request.description(),

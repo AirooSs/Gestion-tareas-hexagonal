@@ -7,6 +7,9 @@ import com.gestiontareas.domain.port.in.ActualizarEstadoTareaUseCase;
 import com.gestiontareas.domain.port.in.CrearTareaUseCase;
 import com.gestiontareas.domain.port.in.ListarTareasPorProyectoUseCase;
 import com.gestiontareas.domain.port.in.ObtenerTareaUseCase;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +47,7 @@ public class TaskController {
 
     /** Crea una nueva tarea asociada a un proyecto */
     @PostMapping
-    public ResponseEntity<TareaResponse> crearTarea(@RequestBody CrearTareaRequest request) {
+    public ResponseEntity<TareaResponse> crearTarea(@Valid @RequestBody CrearTareaRequest request) {
         TareaResponse response = TareaResponse.from(crearTareaUseCase.ejecutar(
             request.titulo(),
             request.descripcion(),
