@@ -3,9 +3,9 @@ package com.gestiontareas.infrastructure.web;
 import com.gestiontareas.domain.model.user.UserId;
 import com.gestiontareas.domain.port.in.CrearProyectoUseCase;
 import com.gestiontareas.domain.port.in.ListarProyectosPorUsuarioUseCase;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/proyectos")
+@Tag(name = "Proyectos", description = "Operaciones sobre proyectos")
 public class ProjectController {
 
     private final CrearProyectoUseCase crearProyectoUseCase;
@@ -36,6 +37,7 @@ public class ProjectController {
     }
 
     /** Crea un nuevo proyecto asociado a un usuario */
+    @Operation(summary = "Crear proyecto", description = "Crea un nuevo proyecto asociado a un usuario")
     @PostMapping
     public ResponseEntity<ProyectoResponse> crearProyecto(@Valid @RequestBody CrearProyectoRequest request) {
         ProyectoResponse response = ProyectoResponse.from(crearProyectoUseCase.ejecutar(
@@ -47,6 +49,7 @@ public class ProjectController {
     }
 
     /** Lista todos los proyectos de un usuario */
+    @Operation(summary = "Listar proyectos por usuario", description = "Devuelve todos los proyectos de un usuario")
     @GetMapping("/usuario/{ownerId}")
     public ResponseEntity<List<ProyectoResponse>> listarPorUsuario(@PathVariable UUID ownerId) {
         List<ProyectoResponse> response = listarProyectosPorUsuarioUseCase.ejecutar(UserId.of(ownerId))

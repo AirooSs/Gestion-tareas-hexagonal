@@ -7,9 +7,9 @@ import com.gestiontareas.domain.port.in.ActualizarEstadoTareaUseCase;
 import com.gestiontareas.domain.port.in.CrearTareaUseCase;
 import com.gestiontareas.domain.port.in.ListarTareasPorProyectoUseCase;
 import com.gestiontareas.domain.port.in.ObtenerTareaUseCase;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tareas")
+@Tag(name = "Tareas", description = "Operaciones sobre tareas")
 public class TaskController {
 
     private final CrearTareaUseCase crearTareaUseCase;
@@ -46,6 +47,7 @@ public class TaskController {
     }
 
     /** Crea una nueva tarea asociada a un proyecto */
+    @Operation(summary = "Crear tarea", description = "Crea una nueva tarea asociada a un proyecto")
     @PostMapping
     public ResponseEntity<TareaResponse> crearTarea(@Valid @RequestBody CrearTareaRequest request) {
         TareaResponse response = TareaResponse.from(crearTareaUseCase.ejecutar(
@@ -57,6 +59,7 @@ public class TaskController {
     }
 
     /** Obtiene una tarea por su ID */
+    @Operation(summary = "Obtener tarea", description = "Obtiene una tarea por su ID")
     @GetMapping("/{id}")
     public ResponseEntity<TareaResponse> obtenerTarea(@PathVariable UUID id) {
         TareaResponse response = TareaResponse.from(obtenerTareaUseCase.ejecutar(TaskId.of(id)));
@@ -64,6 +67,7 @@ public class TaskController {
     }
 
     /** Actualiza el estado de una tarea */
+    @Operation(summary = "Actualizar estado", description = "Actualiza el estado de una tarea")
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TareaResponse> actualizarEstado(
         @PathVariable UUID id,
@@ -77,6 +81,7 @@ public class TaskController {
     }
 
     /** Lista todas las tareas de un proyecto */
+    @Operation(summary = "Listar tareas por proyecto", description = "Devuelve todas las tareas de un proyecto")
     @GetMapping("/proyecto/{projectId}")
     public ResponseEntity<List<TareaResponse>> listarPorProyecto(@PathVariable UUID projectId) {
         List<TareaResponse> response = listarTareasPorProyectoUseCase.ejecutar(ProjectId.of(projectId))
