@@ -18,15 +18,15 @@ com.gestiontareas/
 │   │   ├── project/         # Entidad Project, Value Object ProjectId
 │   │   └── user/            # Entidad User, Value Objects UserId y Email
 │   ├── port/
-│   │   ├── in/              # Puertos de entrada (casos de uso)
-│   │   └── out/             # Puertos de salida (interfaces de repositorio)
+│   │   ├── in/               # Puertos de entrada — interfaces de los casos de uso
+│   │   └── out/              # Puertos de salida — interfaces de repositorio (sin implementación)
 │   └── exception/           # Excepciones del dominio
 │
-├── application/             # Casos de uso — orquesta el dominio
+├── application/             # Casos de uso — implementa los puertos de entrada y orquesta el dominio
 │   └── service/             # Implementaciones de los casos de uso
 │
 └── infrastructure/          # Detalles técnicos — Spring, JPA, REST
-    ├── persistence/         # Entidades JPA, repositorios y mappers
+    ├── persistence/         # Implementaciones JPA de los puertos de salida, entidades y mappers
     └── web/                 # Controllers REST, DTOs y configuración
 ```
 
@@ -37,7 +37,7 @@ Infrastructure  →  Application  →  Domain
   (Spring, JPA)    (Servicios)    (Java puro)
 ```
 
-El dominio no conoce Spring ni JPA. Nunca hay un `@Entity` o `@Component` en la capa de dominio.
+El dominio define **qué** se necesita a través de interfaces (puertos). La infraestructura define **cómo** se implementa con tecnologías concretas (JPA, PostgreSQL). El dominio no conoce Spring ni JPA — nunca hay un `@Entity` o `@Component` en la capa de dominio.
 
 ---
 
@@ -231,9 +231,9 @@ El proyecto incluye tests unitarios para la capa de dominio y aplicación usando
 
 ## 📚 Conceptos aplicados
 
-- **Arquitectura Hexagonal (Ports & Adapters)** — separación total entre dominio e infraestructura
+- **Arquitectura Hexagonal (Ports & Adapters)** — separación total entre dominio e infraestructura mediante interfaces (puertos) e implementaciones (adaptadores)
 - **Domain-Driven Design (DDD)** — Entities, Value Objects, Aggregates, puertos de repositorio
-- **SOLID** — especialmente inversión de dependencias (DIP)
+- **SOLID** — especialmente inversión de dependencias (DIP): el dominio define interfaces, la infraestructura las implementa
 - **API REST** — verbos HTTP correctos, códigos de respuesta, DTOs
 - **Manejo global de excepciones** con `@RestControllerAdvice`
 - **Validaciones** con Jakarta Bean Validation (`@NotBlank`, `@NotNull`)
